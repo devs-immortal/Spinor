@@ -7,27 +7,27 @@ import net.minecraft.util.math.BlockPos;
 
 public class SpinoredBlockPos extends BlockPos {
     private final SpinorEntity spinorEntity;
-    private final BlockPos spoofedPos;
+    private final BlockPos relativePos;
 
-    public SpinoredBlockPos(SpinorEntity spinorEntity, BlockPos spoofedPos) {
-        super(spinorEntity.getBlockPos().add(spoofedPos));
+    public SpinoredBlockPos(SpinorEntity spinorEntity, BlockPos relativePos) {
+        super(spinorEntity.getBlockPos().add(relativePos));
         this.spinorEntity = spinorEntity;
-        this.spoofedPos = spoofedPos;
+        this.relativePos = relativePos;
     }
 
     public SpinoredBlockPos updatePosition() {
-        return new SpinoredBlockPos(spinorEntity, spoofedPos);
+        return new SpinoredBlockPos(spinorEntity, relativePos);
     }
 
     public BlockState getBlockState() {
-        return spinorEntity.blocks.get(spoofedPos).getBlockState();
+        return spinorEntity.getSpinoredBlock(relativePos).getBlockState();
     }
 
     public void setBlockState(BlockState newState) {
-        spinorEntity.blocks.get(spoofedPos).updateBlockState(newState);
+        spinorEntity.getSpinoredBlock(relativePos).updateBlockState(newState);
     }
 
     public BlockEntity getBlockEntity() {
-        return spinorEntity.blocks.get(spoofedPos).getBlockEntity();
+        return spinorEntity.getSpinoredBlock(relativePos).getBlockEntity();
     }
 }

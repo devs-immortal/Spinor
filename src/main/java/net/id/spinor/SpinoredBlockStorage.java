@@ -19,13 +19,14 @@ public class SpinoredBlockStorage {
     public SpinoredBlockStorage(BlockState blockState) {
         this.blockState = blockState;
     }
+
     public SpinoredBlockStorage(BlockState blockState, BlockEntity blockEntity) {
         this(blockState);
         this.blockEntity = blockEntity;
     }
 
-    public void createFakeBlockPos(SpinorEntity spinorEntity, BlockPos blockPos) {
-        this.spinoredBlockPos = new SpinoredBlockPos(spinorEntity, blockPos);
+    public void createFakeBlockPos(SpinorEntity spinorEntity, BlockPos relativePos) {
+        this.spinoredBlockPos = new SpinoredBlockPos(spinorEntity, relativePos);
     }
 
     public void updateBlockState(BlockState newState) {
@@ -41,7 +42,7 @@ public class SpinoredBlockStorage {
     }
 
     public void tickBlockEntity(World world) {
-        if(blockEntity != null) {
+        if (blockEntity != null) {
             BlockEntityTicker<BlockEntity> ticker = blockState.getBlockEntityTicker(world, (BlockEntityType<BlockEntity>) getBlockEntity().getType());
             if (ticker != null)
                 ticker.tick(world, this.spinoredBlockPos, blockState, getBlockEntity());
@@ -56,10 +57,10 @@ public class SpinoredBlockStorage {
         blockEntity = BlockEntity.createFromNbt(this.spinoredBlockPos, blockState, nbtCompound);
     }
 
-    public static SpinoredBlockStorage fromNBT(NbtCompound nbt, SpinorEntity spinorEntity, BlockPos pos) {
+    public static SpinoredBlockStorage fromNBT(NbtCompound nbt, SpinorEntity spinorEntity, BlockPos relativePos) {
         SpinoredBlockStorage spinoredBlockStorage = new SpinoredBlockStorage(Block.getStateFromRawId(nbt.getInt("blockstate")));
         if (nbt.contains("benbt")) {
-            spinoredBlockStorage.createFakeBlockPos(spinorEntity, pos);
+            spinoredBlockStorage.createFakeBlockPos(spinorEntity, relativePos);
             spinoredBlockStorage.createBEfromNBT(nbt.getCompound("benbt"));
         }
         return spinoredBlockStorage;

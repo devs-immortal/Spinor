@@ -13,11 +13,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BlockEntity.class)
 public abstract class BlockEntityMixin {
 
-    @Shadow public abstract BlockPos getPos();
+    @Shadow
+    public abstract BlockPos getPos();
 
-    @Inject(method = "toUpdatePacket",at = @At("RETURN"))
-    public void stealUpdatePacket(CallbackInfoReturnable<BlockEntityUpdateS2CPacket> cir){
-        if(this.getPos() instanceof SpinoredBlockPos) {
+    @Inject(method = "toUpdatePacket", at = @At("RETURN"))
+    public void stealUpdatePacket(CallbackInfoReturnable<BlockEntityUpdateS2CPacket> cir) {
+        if (this.getPos() instanceof SpinoredBlockPos) {
             System.out.println("we out here");
             System.out.println(cir.getReturnValue().getNbt());
         }

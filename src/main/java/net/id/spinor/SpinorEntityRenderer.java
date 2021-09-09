@@ -20,16 +20,16 @@ public class SpinorEntityRenderer extends EntityRenderer<SpinorEntity> {
 
     public void render(SpinorEntity fallingBlockEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
-       // matrixStack.translate(-0.5D, 0.0D, -0.5D);
+        // matrixStack.translate(-0.5D, 0.0D, -0.5D);
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F - f));
         matrixStack.translate(-0.5D, 0.0D, -0.5D);
         //matrixStack.translate(-1D, 0.0D, -1D);
-        fallingBlockEntity.blocks.forEach((blockPos, spinoredBlockStorage) -> {
-            matrixStack.translate(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        fallingBlockEntity.spinoredBlockStorages.forEach((relativePos, spinoredBlockStorage) -> {
+            matrixStack.translate(relativePos.getX(), relativePos.getY(), relativePos.getZ());
             if (spinoredBlockStorage.getBlockEntity() != null)
                 MinecraftClient.getInstance().getBlockEntityRenderDispatcher().render(spinoredBlockStorage.getBlockEntity(), f, matrixStack, vertexConsumerProvider);
             MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(spinoredBlockStorage.getBlockState(), matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
-            matrixStack.translate(-blockPos.getX(), -blockPos.getY(), -blockPos.getZ());
+            matrixStack.translate(-relativePos.getX(), -relativePos.getY(), -relativePos.getZ());
         });
         matrixStack.pop();
         super.render(fallingBlockEntity, f, g, matrixStack, vertexConsumerProvider, i);

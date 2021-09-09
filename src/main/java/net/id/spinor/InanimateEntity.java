@@ -1,6 +1,5 @@
 package net.id.spinor;
 
-import net.id.spinor.SpinorMod;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
@@ -22,6 +21,7 @@ public class InanimateEntity extends Entity {
         this.prevY = y;
         this.prevZ = z;
     }
+
     @Override
     public boolean doesRenderOnFire() {
         return false;

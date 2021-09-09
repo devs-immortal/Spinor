@@ -12,7 +12,6 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
@@ -20,10 +19,10 @@ import java.util.HashSet;
 
 public class SpinorEntity extends InanimateEntity {
 
-    public HashMap<BlockPos, SpinoredBlockStorage> blocks = new HashMap<>();
+    public HashMap<BlockPos, SpinoredBlockStorage> spinoredBlockStorages = new HashMap<>();
 
     public SpinorEntity(EntityType<SpinorEntity> spinorEntityEntityType, World world) {
-        super(spinorEntityEntityType,world);
+        super(spinorEntityEntityType, world);
     }
 
     public SpinorEntity(World world, double x, double y, double z) {
@@ -33,18 +32,19 @@ public class SpinorEntity extends InanimateEntity {
         this.prevX = x;
         this.prevY = y;
         this.prevZ = z;
-        this.setRotation(180,this.getPitch());
+        this.setRotation(180, this.getPitch());
     }
 
-    public void grabAllBlocks(BlockPos pos){
-        addBlocks(Sets.newHashSet(),pos);
+    public void grabAllBlocks(BlockPos pos) {
+        addBlocks(Sets.newHashSet(), pos);
     }
+
     private void addBlocks(HashSet<BlockPos> touched, BlockPos pos) {
         if (touched.size() > 40 || touched.contains(pos)) return;
 
         touched.add(pos);
 
-        if(addBlock(pos)) {
+        if (addBlock(pos)) {
             addBlocks(touched, pos.up());
             addBlocks(touched, pos.down());
             addBlocks(touched, pos.west());
@@ -53,6 +53,7 @@ public class SpinorEntity extends InanimateEntity {
             addBlocks(touched, pos.south());
         }
     }
+
     public boolean addBlock(BlockPos pos) {
         BlockState blockState = world.getBlockState(pos);
         if (!blockState.isAir()) {
@@ -60,12 +61,17 @@ public class SpinorEntity extends InanimateEntity {
             BlockPos relativePos = pos.subtract(this.getBlockPos());
             SpinoredBlockStorage spinoredBlockStorage = new SpinoredBlockStorage(blockState, blockEntity);
             spinoredBlockStorage.createFakeBlockPos(this, relativePos);
-            this.blocks.put(relativePos, spinoredBlockStorage);
+            this.spinoredBlockStorages.put(relativePos, spinoredBlockStorage);
             this.world.setBlockState(pos, Blocks.AIR.getDefaultState());
             return true;
         }
         return false;
     }
+
+    public SpinoredBlockStorage getSpinoredBlock(BlockPos relativePos) {
+        return spinoredBlockStorages.get(relativePos);
+    }
+
     //todo this does not work. Bounding boxes are limited to rectangles and are unable to rotate.
     @Override
     protected Box calculateBoundingBox() {
@@ -84,8 +90,8 @@ public class SpinorEntity extends InanimateEntity {
     public void tick() {
         super.tick();
         // setRotation(getYaw() +1,getPitch());
-        blocks.forEach((blockPos, spinoredBlockStorage) -> {
-            spinoredBlockStorage.createFakeBlockPos(this, blockPos);
+        spinoredBlockStorages.forEach((relativePos, spinoredBlockStorage) -> {
+            spinoredBlockStorage.createFakeBlockPos(this, relativePos);
             spinoredBlockStorage.tickBlockEntity(world);
             if (world.isClient) {
                 spinoredBlockStorage.clientDisplayTick(world);
@@ -95,25 +101,25 @@ public class SpinorEntity extends InanimateEntity {
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
-        NbtList links = (NbtList) nbt.get("blocks");
+        NbtList links = (NbtList) nbt.get("spinoredBlocks");
         if (links != null)
             for (int i = 0; i < links.size(); i++) {
                 NbtCompound link = links.getCompound(i);
-                BlockPos pos = BlockPos.fromLong(link.getLong("blockpos"));
-                this.blocks.put(pos, SpinoredBlockStorage.fromNBT(link, this, pos));
+                BlockPos relativePos = BlockPos.fromLong(link.getLong("relativePos"));
+                this.spinoredBlockStorages.put(relativePos, SpinoredBlockStorage.fromNBT(link, this, relativePos));
             }
     }
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound nbt) {
         NbtList links = new NbtList();
-        this.blocks.forEach((blockPos, spinoredBlockStorage) ->{
+        this.spinoredBlockStorages.forEach((relativePos, spinoredBlockStorage) -> {
             NbtCompound nbtCompound = new NbtCompound();
-            nbtCompound.putLong("blockpos",blockPos.asLong());
+            nbtCompound.putLong("relativePos", relativePos.asLong());
             spinoredBlockStorage.writeCustomDataToNbt(nbtCompound);
             links.add(nbtCompound);
         });
-        nbt.put("blocks",links);
+        nbt.put("spinoredBlocks", links);
     }
 
     @Override
@@ -127,7 +133,7 @@ public class SpinorEntity extends InanimateEntity {
         double d = packet.getX();
         double e = packet.getY();
         double f = packet.getZ();
-        this.blocks = ((SpinorSpawnPacket) packet).getBlocks();
+        this.spinoredBlockStorages = ((SpinorSpawnPacket) packet).getBlocks();
         this.setPosition(d, e + (double) ((1.0F - this.getHeight()) / 2.0F), f);
 
     }

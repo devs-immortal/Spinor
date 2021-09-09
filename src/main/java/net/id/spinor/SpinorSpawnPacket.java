@@ -30,7 +30,7 @@ public class SpinorSpawnPacket extends EntitySpawnS2CPacket {
         buf.writeShort(this.velocityZ);
         this.blocks = entity.blocks;
          */
-        this.blocks = entity.blocks;
+        this.blocks = entity.spinoredBlockStorages;
     }
 
     public SpinorSpawnPacket(PacketByteBuf buf) {
@@ -38,9 +38,9 @@ public class SpinorSpawnPacket extends EntitySpawnS2CPacket {
 
         int numBlocks = buf.readInt();
         for (int i = 0; i < numBlocks; i++) {
-            BlockPos pos = buf.readBlockPos();
+            BlockPos relativePos = buf.readBlockPos();
             BlockState state = Block.getStateFromRawId(buf.readInt());
-            blocks.put(pos, new SpinoredBlockStorage(state));
+            blocks.put(relativePos, new SpinoredBlockStorage(state));
         }
 
     }
@@ -49,13 +49,13 @@ public class SpinorSpawnPacket extends EntitySpawnS2CPacket {
     public void write(PacketByteBuf buf) {
         super.write(buf);
         buf.writeInt(blocks.size());
-        blocks.forEach((blockPos, spinoredBlockStorage) -> {
-            buf.writeBlockPos(blockPos);
+        blocks.forEach((relativePos, spinoredBlockStorage) -> {
+            buf.writeBlockPos(relativePos);
             buf.writeInt(Block.getRawIdFromState(spinoredBlockStorage.getBlockState()));
         });
     }
 
-    public HashMap<BlockPos, SpinoredBlockStorage> getBlocks(){
+    public HashMap<BlockPos, SpinoredBlockStorage> getBlocks() {
         return blocks;
     }
 }
