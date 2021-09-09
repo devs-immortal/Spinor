@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "net.id.spinor.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "BlockEntityAccessor",
+    "BlockEntityMixin",
+    "WorldGetBEMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
