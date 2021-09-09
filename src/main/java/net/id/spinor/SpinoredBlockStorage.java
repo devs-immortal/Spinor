@@ -1,8 +1,6 @@
 package net.id.spinor;
 
-import net.id.spinor.mixin.BlockEntityAccessor;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -24,17 +22,6 @@ public class SpinoredBlockStorage {
     public SpinoredBlockStorage(BlockState blockState, BlockEntity blockEntity) {
         this(blockState);
         this.blockEntity = blockEntity;
-    }
-    public void createBlockEntity(World world) {
-        blockEntity = ((BlockEntityProvider) blockState.getBlock()).createBlockEntity(spinoredBlockPos, blockState);
-        if (blockEntity != null)
-            blockEntity.setWorld(world);
-    }
-
-    public void updateFakeBlockPos() {
-        this.spinoredBlockPos = this.spinoredBlockPos.updatePosition();
-        if (blockEntity != null)
-            ((BlockEntityAccessor) blockEntity).setPos(this.spinoredBlockPos);
     }
 
     public void createFakeBlockPos(SpinorEntity spinorEntity, BlockPos blockPos) {

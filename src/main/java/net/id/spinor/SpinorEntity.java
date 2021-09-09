@@ -84,13 +84,13 @@ public class SpinorEntity extends InanimateEntity {
     public void tick() {
         super.tick();
         // setRotation(getYaw() +1,getPitch());
-      blocks.forEach((blockPos, spinoredBlockStorage) -> {
-          spinoredBlockStorage.createFakeBlockPos(this,blockPos);
-          spinoredBlockStorage.tickBlockEntity(world);
-          if (world.isClient) {
-              spinoredBlockStorage.clientDisplayTick(world);
-          }
-      });
+        blocks.forEach((blockPos, spinoredBlockStorage) -> {
+            spinoredBlockStorage.createFakeBlockPos(this, blockPos);
+            spinoredBlockStorage.tickBlockEntity(world);
+            if (world.isClient) {
+                spinoredBlockStorage.clientDisplayTick(world);
+            }
+        });
     }
 
     @Override
