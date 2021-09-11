@@ -1,12 +1,19 @@
 package net.id.spinor;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.id.spinor.block.SenderBlock;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.Material;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
@@ -22,6 +29,8 @@ public class SpinorMod implements ModInitializer {
 
     public static Identifier SPINOR_ID = new Identifier(MOD_ID, "spinor");
     public static EntityType<SpinorEntity> SPINOR_ENTITY_TYPE;
+
+    public static final ItemGroup GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "spinor"), () -> new ItemStack(Blocks.PISTON_HEAD));
 
     @Override
     public void onInitialize() {
@@ -45,5 +54,7 @@ public class SpinorMod implements ModInitializer {
             }
             return TypedActionResult.pass(stack);
         }));
+
+        new SenderBlock(AbstractBlock.Settings.of(Material.METAL));
     }
 }

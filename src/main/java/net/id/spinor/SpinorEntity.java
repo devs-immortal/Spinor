@@ -4,7 +4,9 @@ import com.google.common.collect.Sets;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.MovementType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.Packet;
@@ -19,6 +21,7 @@ import java.util.HashSet;
 
 public class SpinorEntity extends InanimateEntity {
 
+    //BlockPos is a pos relative to the center of the entity. Ie 0,0,0 is the center, and a block above that would be 0,1,0
     public HashMap<BlockPos, SpinoredBlockStorage> spinoredBlockStorages = new HashMap<>();
 
     public SpinorEntity(EntityType<SpinorEntity> spinorEntityEntityType, World world) {
@@ -39,7 +42,7 @@ public class SpinorEntity extends InanimateEntity {
         addBlocks(Sets.newHashSet(), pos);
     }
 
-    private void addBlocks(HashSet<BlockPos> touched, BlockPos pos) {
+    public void addBlocks(HashSet<BlockPos> touched, BlockPos pos) {
         if (touched.size() > 40 || touched.contains(pos)) return;
 
         touched.add(pos);
@@ -86,7 +89,11 @@ public class SpinorEntity extends InanimateEntity {
          */
         return box;
     }
-
+    @Override
+    public boolean collidesWith(Entity other) {
+        //other.move(MovementType.SELF, this.getVelocity());
+        return true;
+    }
     public void tick() {
         super.tick();
         // setRotation(getYaw() +1,getPitch());
@@ -97,6 +104,8 @@ public class SpinorEntity extends InanimateEntity {
                 spinoredBlockStorage.clientDisplayTick(world);
             }
         });
+        this.move(MovementType.SELF, getVelocity());
+
     }
 
     @Override
