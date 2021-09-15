@@ -1,12 +1,15 @@
 package net.id.spinor;
 
+import net.id.spinor.mixin.BlockEntityAccessor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.world.World;
 
 import java.util.Random;
@@ -25,8 +28,8 @@ public class SpinoredBlockStorage {
         this.blockEntity = blockEntity;
     }
 
-    public void createFakeBlockPos(SpinorEntity spinorEntity, BlockPos relativePos) {
-        this.spinoredBlockPos = new SpinoredBlockPos(spinorEntity, relativePos);
+    public void createFakeBlockPos(SpinorEntityBase spinorEntity) {
+        this.spinoredBlockPos = new SpinoredBlockPos(spinorEntity);
     }
 
     public void updateBlockState(BlockState newState) {
@@ -43,10 +46,15 @@ public class SpinoredBlockStorage {
 
     public void tickBlockEntity(World world) {
         if (blockEntity != null) {
+            ((BlockEntityAccessor) blockEntity).setPos(spinoredBlockPos);
             BlockEntityTicker<BlockEntity> ticker = blockState.getBlockEntityTicker(world, (BlockEntityType<BlockEntity>) getBlockEntity().getType());
             if (ticker != null)
                 ticker.tick(world, this.spinoredBlockPos, blockState, getBlockEntity());
         }
+    }
+
+    public void interact(World world, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        blockState.getBlock().onUse(blockState, world, spinoredBlockPos, player, hand, hit);
     }
 
     public void clientDisplayTick(World world) {
@@ -57,11 +65,13 @@ public class SpinoredBlockStorage {
         blockEntity = BlockEntity.createFromNbt(this.spinoredBlockPos, blockState, nbtCompound);
     }
 
-    public static SpinoredBlockStorage fromNBT(NbtCompound nbt, SpinorEntity spinorEntity, BlockPos relativePos) {
+    public static SpinoredBlockStorage fromNBT(NbtCompound nbt, SpinorEntityBase spinorEntity) {
         SpinoredBlockStorage spinoredBlockStorage = new SpinoredBlockStorage(Block.getStateFromRawId(nbt.getInt("blockstate")));
         if (nbt.contains("benbt")) {
-            spinoredBlockStorage.createFakeBlockPos(spinorEntity, relativePos);
+            spinoredBlockStorage.createFakeBlockPos(spinorEntity);
             spinoredBlockStorage.createBEfromNBT(nbt.getCompound("benbt"));
+            spinoredBlockStorage.blockEntity.setWorld(spinorEntity.world);
+            spinoredBlockStorage.createFakeBlockPos(spinorEntity);
         }
         return spinoredBlockStorage;
     }

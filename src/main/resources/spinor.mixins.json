@@ -5,7 +5,8 @@
   "mixins": [
     "BlockEntityAccessor",
     "BlockEntityMixin",
-    "WorldGetBEMixin"
+    "WorldGetBEMixin",
+    "EntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

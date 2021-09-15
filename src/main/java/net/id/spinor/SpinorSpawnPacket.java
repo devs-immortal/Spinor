@@ -12,7 +12,7 @@ public class SpinorSpawnPacket extends EntitySpawnS2CPacket {
 
     HashMap<BlockPos, SpinoredBlockStorage> blocks;
 
-    public SpinorSpawnPacket(SpinorEntity entity) {
+    public SpinorSpawnPacket(SpinorHostEntity entity) {
         super(entity);
         /*
         buf.writeVarInt(entity.getId());
@@ -30,7 +30,7 @@ public class SpinorSpawnPacket extends EntitySpawnS2CPacket {
         buf.writeShort(this.velocityZ);
         this.blocks = entity.blocks;
          */
-        this.blocks = entity.spinoredBlockStorages;
+        // this.blocks = entity.spinoredBlockStorages;
     }
 
     public SpinorSpawnPacket(PacketByteBuf buf) {
